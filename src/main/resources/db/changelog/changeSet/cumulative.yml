@@ -1,4 +1,0 @@
-databaseChangeLog:
-  - include:
-      file: tables/create_table_test.yml
-      relativeToChangelogFile: true
