@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: FVP-Deposit
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/deposit_db
+    username: root
+    password: mysql-root-password
+  liquibase:
+    enabled: true
+    change-log: classpath:db.changelog/changelog.yml
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: info
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    metrics:
+      enabled: true

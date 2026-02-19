@@ -2,6 +2,11 @@ databaseChangeLog:
   - changeSet:
       id: create_table_test
       author: Vladislav Skaldytskiy
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: test
       changes:
         - createTable:
             tableName: test
@@ -13,4 +18,4 @@ databaseChangeLog:
                   autoIncrement: true
                   constraints:
                     primaryKey: true
-
+                    nullable: false
