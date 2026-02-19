@@ -1,4 +1,4 @@
 databaseChangeLog:
   - include:
-      file: tables/create_table_test.yml
+      file: changeSet/cumulative.yml
       relativeToChangelogFile: true
