@@ -1,12 +1,14 @@
 package ru.fpv.deposit.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import ru.fpv.deposit.dto.CreateDefaultProductResponse;
-import ru.fpv.deposit.dto.UpdateDepositProductRequest;
+import ru.fpv.deposit.dto.DepositProductResponse;
 import ru.fpv.deposit.enums.DEPOSIT_TYPE;
 import ru.fpv.deposit.enums.PERIOD_TYPE;
 import ru.fpv.deposit.model.DepositProduct;
@@ -15,6 +17,9 @@ import ru.fpv.deposit.repository.DepositsProductsRepository;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +32,7 @@ import static ru.fpv.deposit.enums.DEPOSIT_TYPE.*;
 public class DepositsProductsService {
     private final DepositsProductsRepository depositsProductsRepository;
     private final CbRatesRepository cbRatesRepository;
+    private final JdbcTemplate jdbcTemplate;
 
     private static final BigDecimal MIN_DEPOSIT_AMOUNT = BigDecimal.valueOf(1000);
     private static final BigDecimal MAX_DEPOSIT_AMOUNT = BigDecimal.valueOf(10_000_000);
@@ -129,6 +135,72 @@ public class DepositsProductsService {
                case TERM, TERM_CAPITALIZATION -> MIN_PERIOD;
            };
        }
+
+    public List<DepositProductResponse> getDepositProducts(
+            Boolean isExpired,
+            LocalDateTime createdFrom,
+            LocalDateTime createdTo,
+            LocalDateTime modifiedFrom,
+            LocalDateTime modifiedTo
+    ) {
+        String sql = "SELECT * FROM DEPOSIT_PRODUCT WHERE 1=1";
+        List<Object> params = new ArrayList<>();
+
+        if (isExpired != null) {
+            sql += " AND IS_EXPIRED = ?";
+            params.add(isExpired);
+        }
+        if (createdFrom != null) {
+            sql += " AND CREATED >= ?";
+            params.add(Timestamp.valueOf(createdFrom));
+        }
+        if (createdTo != null) {
+            sql += " AND CREATED <= ?";
+            params.add(Timestamp.valueOf(createdTo));
+        }
+        if (modifiedFrom != null) {
+            sql += " AND MODIFIED >= ?";
+            params.add(Timestamp.valueOf(modifiedFrom));
+        }
+        if (modifiedTo != null) {
+            sql += " AND MODIFIED <= ?";
+            params.add(Timestamp.valueOf(modifiedTo));
+        }
+
+        sql += " ORDER BY MODIFIED DESC";
+
+        return jdbcTemplate.query(sql, params.toArray(), (rs, rowNum) -> mapRowToDTO(rs));
+    }
+
+    public DepositProductResponse getDepositProductById(Long id) {
+        try {
+            return jdbcTemplate.queryForObject(
+                    "SELECT * FROM DEPOSIT_PRODUCT WHERE ID = ?",
+                    new Object[]{id},
+                    (rs, rowNum) -> mapRowToDTO(rs)
+            );
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Deposit product not found");
+        }
+    }
+
+    private DepositProductResponse mapRowToDTO(ResultSet rs) throws SQLException {
+        return new DepositProductResponse(
+                rs.getLong("ID"),
+                DEPOSIT_TYPE.valueOf(rs.getString("DEPOSIT_TYPE")),
+                PERIOD_TYPE.valueOf(rs.getString("PERIOD_TYPE")),
+                rs.getObject("LIMIT_PERIOD") != null ? rs.getInt("LIMIT_PERIOD") : null,
+                rs.getInt("MIN_PERIOD"),
+                rs.getBigDecimal("MIN_RATE"),
+                rs.getBigDecimal("MAX_RATE"),
+                rs.getBigDecimal("MIN_DEPOSIT_AMOUNT"),
+                rs.getBigDecimal("MAX_DEPOSIT_AMOUNT"),
+                rs.getBoolean("IS_CAPITALIZATION"),
+                rs.getBoolean("IS_EXPIRED"),
+                rs.getTimestamp("CREATED").toLocalDateTime(),
+                rs.getTimestamp("MODIFIED").toLocalDateTime()
+        );
+    }
 
 }
 

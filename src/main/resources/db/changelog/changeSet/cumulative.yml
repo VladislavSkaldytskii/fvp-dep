@@ -5,3 +5,4 @@ databaseChangeLog:
   - include:
       file: tables/create-table-deposit-product.yml
       relativeToChangelogFile: true
+
