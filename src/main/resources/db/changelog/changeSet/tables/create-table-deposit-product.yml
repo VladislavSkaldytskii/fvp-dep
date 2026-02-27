@@ -1,0 +1,82 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-deposit-product
+      author: Vladislav Skaldytskiy
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: DEPOSIT_PRODUCT
+      changes:
+        - createTable:
+            tableName: DEPOSIT_PRODUCT
+            remarks: справочник депозитных продуктов
+            columns:
+              - column:
+                  name: ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: MAX_RATE
+                  type: DECIMAL(5,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: MIN_RATE
+                  type: DECIMAL(5,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: MIN_DEPOSIT_AMOUNT
+                  type: DECIMAL(19,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: MAX_DEPOSIT_AMOUNT
+                  type: DECIMAL(19,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DEPOSIT_TYPE
+                  type: VARCHAR(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: IS_CAPITALIZATION
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: PERIOD_TYPE
+                  type: VARCHAR(16)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: MIN_PERIOD
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: LIMIT_PERIOD
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: IS_EXPIRED
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: CREATED
+                  type: DATETIME
+              - column:
+                  name: MODIFIED
+                  type: DATETIME
+
+
+
+
+
