@@ -130,31 +130,6 @@ public class DepositsProductsService {
            };
        }
 
-    @Transactional
-    public DepositProduct updateDepositProduct(UpdateDepositProductRequest request) {
-        DepositProduct product = (DepositProduct) depositsProductsRepository.findById(request.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Deposit product not found"));
-
-        if (request.getMinRate().compareTo(request.getMaxRate()) > 0)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "minRate cannot be greater than maxRate");
-
-        if (request.getMinDepositAmount().compareTo(request.getMaxDepositAmount()) > 0)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "minDepositAmount cannot be greater than maxDepositAmount");
-
-        if (request.getLimitPeriod() != null && request.getMinPeriod() > request.getLimitPeriod())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "minPeriod cannot be greater than limitPeriod");
-
-        product.setMinRate(request.getMinRate());
-        product.setMaxRate(request.getMaxRate());
-        product.setMinDepositAmount(request.getMinDepositAmount());
-        product.setMaxDepositAmount(request.getMaxDepositAmount());
-        product.setPeriodType(request.getPeriodType());
-        product.setMinPeriod(request.getMinPeriod());
-        product.setLimitPeriod(request.getLimitPeriod());
-        product.setModified(LocalDateTime.now());
-
-        return depositsProductsRepository.save(product);
-    }
 }
 
 
