@@ -1,6 +1,7 @@
 package ru.fpv.deposit.controller;
 
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -10,6 +11,8 @@ import ru.fpv.deposit.dto.CreateDefaultProductResponse;
 
 import ru.fpv.deposit.dto.DepositProductResponse;
 
+import ru.fpv.deposit.dto.UpdateDepositProductRequest;
+import ru.fpv.deposit.model.DepositProduct;
 import ru.fpv.deposit.service.DepositsProductsService;
 
 import java.time.LocalDateTime;
@@ -45,6 +48,18 @@ public class DepositsProductsController {
     @GetMapping("/deposit-product/{id}")
     public ResponseEntity<DepositProductResponse> getDepositProductById(@PathVariable Long id) {
         return ResponseEntity.ok(depositsProductsService.getDepositProductById(id));
+    }
+
+    @PatchMapping("/deposit-product/{id}")
+    public ResponseEntity<DepositProduct> updateDepositProduct(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateDepositProductRequest request) {
+
+        DepositProduct updatedProduct = depositsProductsService.updateDepositProduct(id, request);
+        if (updatedProduct == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updatedProduct);
     }
 
 }

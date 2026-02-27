@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import ru.fpv.deposit.dto.CreateDefaultProductResponse;
 import ru.fpv.deposit.dto.DepositProductResponse;
+import ru.fpv.deposit.dto.UpdateDepositProductRequest;
 import ru.fpv.deposit.enums.DEPOSIT_TYPE;
 import ru.fpv.deposit.enums.PERIOD_TYPE;
 import ru.fpv.deposit.model.DepositProduct;
@@ -200,6 +201,32 @@ public class DepositsProductsService {
                 rs.getTimestamp("CREATED").toLocalDateTime(),
                 rs.getTimestamp("MODIFIED").toLocalDateTime()
         );
+    }
+
+    @Transactional
+    public DepositProduct updateDepositProduct(Long id, UpdateDepositProductRequest request) {
+        DepositProduct product = (DepositProduct) depositsProductsRepository.findById(request.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Deposit product not found"));
+
+        if (request.getMinRate().compareTo(request.getMaxRate()) > 0)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "minRate cannot be greater than maxRate");
+
+        if (request.getMinDepositAmount().compareTo(request.getMaxDepositAmount()) > 0)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "minDepositAmount cannot be greater than maxDepositAmount");
+
+        if (request.getLimitPeriod() != null && request.getMinPeriod() > request.getLimitPeriod())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "minPeriod cannot be greater than limitPeriod");
+
+        product.setMinRate(request.getMinRate());
+        product.setMaxRate(request.getMaxRate());
+        product.setMinDepositAmount(request.getMinDepositAmount());
+        product.setMaxDepositAmount(request.getMaxDepositAmount());
+        product.setPeriodType(request.getPeriodType());
+        product.setMinPeriod(request.getMinPeriod());
+        product.setLimitPeriod(request.getLimitPeriod());
+        product.setModified(LocalDateTime.now());
+
+        return depositsProductsRepository.save(product);
     }
 
 }
