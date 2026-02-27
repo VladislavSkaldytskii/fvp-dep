@@ -62,7 +62,7 @@ databaseChangeLog:
                   name: LIMIT_PERIOD
                   type: INT
                   constraints:
-                    nullable: false
+                    nullable: true
               - column:
                   name: IS_EXPIRED
                   type: BOOLEAN

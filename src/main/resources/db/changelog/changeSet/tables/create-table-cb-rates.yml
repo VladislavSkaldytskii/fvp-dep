@@ -33,7 +33,7 @@ databaseChangeLog:
                   name: END_PERIOD
                   type: DATE
                   constraints:
-                    nullable: false
+                    nullable: true
   - changeSet:
       id: add-cb-rates-index
       author: Vladislav Skaldytskiy
@@ -46,5 +46,6 @@ databaseChangeLog:
                   name: START_PERIOD
               - column:
                   name: END_PERIOD
+
 
 

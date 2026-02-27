@@ -1,0 +1,65 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-cb-rates
+      author: Vladislav Skaldytskiy
+      changes:
+        - insert:
+            tableName: CB_RATES
+            columns:
+              - column:
+                  name: START_PERIOD
+                  valueDate: "2025-07-28"
+              - column:
+                  name: RATE
+                  valueNumeric: "18.00"
+              - column:
+                  name: END_PERIOD
+                  valueDate: "2025-09-15"
+        - insert:
+            tableName: CB_RATES
+            columns:
+              - column:
+                  name: START_PERIOD
+                  valueDate: "2025-09-15"
+              - column:
+                  name: RATE
+                  valueNumeric: "17.00"
+              - column:
+                  name: END_PERIOD
+                  valueDate: "2025-10-27"
+        - insert:
+            tableName: CB_RATES
+            columns:
+              - column:
+                  name: START_PERIOD
+                  valueDate: "2025-10-27"
+              - column:
+                  name: RATE
+                  valueNumeric: "16.50"
+              - column:
+                  name: END_PERIOD
+                  valueDate: "2025-12-22"
+        - insert:
+            tableName: CB_RATES
+            columns:
+              - column:
+                  name: START_PERIOD
+                  valueDate: "2025-12-22"
+              - column:
+                  name: RATE
+                  valueNumeric: "16.00"
+              - column:
+                  name: END_PERIOD
+                  valueDate: "2026-02-16"
+        - insert:
+            tableName: CB_RATES
+            columns:
+              - column:
+                  name: START_PERIOD
+                  valueDate: "2026-02-16"
+              - column:
+                  name: RATE
+                  valueNumeric: "15.50"
+              - column:
+                  name: END_PERIOD
+                  valueComputed: "NULL"
