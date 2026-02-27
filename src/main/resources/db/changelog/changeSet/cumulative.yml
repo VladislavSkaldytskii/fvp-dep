@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: tables/create-table-cb-rates.yml
+      relativeToChangelogFile: true
+  - include:
+      file: tables/create-table-deposit-product.yml
+      relativeToChangelogFile: true

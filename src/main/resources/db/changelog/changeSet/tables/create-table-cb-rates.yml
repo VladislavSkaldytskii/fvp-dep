@@ -1,0 +1,51 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-cb-rates
+      author: Vladislav Skaldytskiy
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: CB_RATES
+      changes:
+        - createTable:
+            tableName: CB_RATES
+            remarks: периоды действия ключевой ставки (или ставки ЦБ)
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: RATE
+                  type: DECIMAL(5,2)
+                  constraints:
+                    nullable: false
+                    checkConstraint: "RATE >= 0"
+              - column:
+                  name: START_PERIOD
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: END_PERIOD
+                  type: DATE
+                  constraints:
+                    nullable: true
+  - changeSet:
+      id: add-cb-rates-index
+      author: Vladislav Skaldytskiy
+      changes:
+        - createIndex:
+            tableName: CB_RATES
+            indexName: add-cb-rates-index
+            columns:
+              - column:
+                  name: START_PERIOD
+              - column:
+                  name: END_PERIOD
+
+
+
