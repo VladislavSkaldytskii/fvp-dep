@@ -37,8 +37,9 @@ public class DepositsProductsService {
 
     private static final BigDecimal MIN_DEPOSIT_AMOUNT = BigDecimal.valueOf(1000);
     private static final BigDecimal MAX_DEPOSIT_AMOUNT = BigDecimal.valueOf(10_000_000);
-    private static final int MIN_PERIOD = 3;
-    private static final int MAX_PERIOD_DEMAND = 1;
+    private static final int MIN_PERIOD_DEMAND = 1;
+    private static final int MAX_PERIOD_DEMAND = 30 ;
+    private static final int MIN_PERIOD_TERM = 1;
 
    @Transactional
     public CreateDefaultProductResponse createDefaultProductResponse() {
@@ -70,9 +71,9 @@ public class DepositsProductsService {
 
                DepositProduct product = DepositProduct.builder()
                        .depositType(depositType)
-                       .periodType(periodType)
-                       .limitPeriod(depositType == DEPOSIT_TYPE.DEMAND ? null : 36)
-                       .minPeriod(depositType == DEPOSIT_TYPE.DEMAND ? 1 : 3)
+                       .periodType(resolvePeriodType(depositType))
+                       .limitPeriod(resolveLimitPeriod(depositType))
+                       .minPeriod(resolveMinPeriod(depositType))
                        .minRate(round(calculateMinRate(depositType, cbRate)))
                        .maxRate(round(calculateMaxRate(depositType, cbRate)))
                        .minDepositAmount(MIN_DEPOSIT_AMOUNT)
@@ -132,8 +133,8 @@ public class DepositsProductsService {
 
        private int resolveMinPeriod (DEPOSIT_TYPE type){
            return switch (type) {
-               case DEMAND -> MIN_PERIOD;
-               case TERM, TERM_CAPITALIZATION -> MIN_PERIOD;
+               case DEMAND -> MIN_PERIOD_DEMAND;
+               case TERM, TERM_CAPITALIZATION ->MIN_PERIOD_TERM ;
            };
        }
 
